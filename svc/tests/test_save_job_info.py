@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 import boto3
-from moto import mock_s3
+from moto import mock_aws
 from otokuna.testing import build_mock_requests_get
 
 import save_job_info
@@ -11,7 +11,7 @@ import save_job_info
 DATA_DIR = Path(__file__).parent / "data"
 
 
-@mock_s3
+@mock_aws
 def test_main(set_environ, monkeypatch):
     output_bucket = os.environ["OUTPUT_BUCKET"]
 

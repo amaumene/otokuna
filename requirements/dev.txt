@@ -4,177 +4,177 @@
 #
 #    make requirements/dev.txt
 #
-appdirs==1.4.4
+appdirs
     # via dvc
-async-generator==1.10
+async-generator
     # via
     #   -c requirements/svc.txt
     #   pytest-trio
     #   trio
-atpublic==2.1.2
+atpublic
     # via flufl.lock
-attrs==20.3.0
+attrs
     # via
     #   -c requirements/svc.txt
     #   jsonschema
     #   outcome
     #   pytest
     #   trio
-aws-sam-translator==1.33.0
+aws-sam-translator
     # via cfn-lint
-aws-xray-sdk==2.6.0
+aws-xray-sdk
     # via moto
-boto3==1.17.7
+boto3
     # via
     #   -c requirements/app.txt
     #   -r requirements/dev.in
     #   aws-sam-translator
     #   moto
-boto==2.49.0
+boto
     # via moto
-botocore==1.20.7
+botocore
     # via
     #   -c requirements/app.txt
     #   aws-xray-sdk
     #   boto3
     #   moto
     #   s3transfer
-catboost==0.24.4
+catboost
     # via -r requirements/dev.in
-certifi==2020.12.5
+certifi
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
     #   dulwich
     #   requests
-cffi==1.14.4
+cffi
     # via cryptography
-cfn-lint==0.44.4
+cfn-lint
     # via moto
-chardet==4.0.0
+chardet
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
     #   requests
-colorama==0.4.4
+colorama
     # via
     #   dvc
     #   rich
-commonmark==0.9.1
+commonmark
     # via rich
-configobj==5.0.6
+configobj
     # via dvc
-cryptography==3.4.6
+cryptography
     # via
     #   moto
     #   python-jose
     #   sshpubkeys
-cycler==0.10.0
+cycler
     # via matplotlib
-decorator==4.4.2
+decorator
     # via
     #   -c requirements/app.txt
     #   jsonpath-ng
     #   networkx
-dictdiffer==0.8.1
+dictdiffer
     # via dvc
-distro==1.5.0
+distro
     # via dvc
-docker==4.4.1
+docker
     # via moto
-dpath==2.0.1
+dpath
     # via dvc
-dulwich==0.20.15
+dulwich
     # via dvc
-dvc==1.11.15
+dvc
     # via -r requirements/dev.in
-ecdsa==0.14.1
+ecdsa
     # via
     #   moto
     #   python-jose
     #   sshpubkeys
-flatten-dict==0.3.0
+flatten-dict
     # via dvc
-flufl.lock==3.2
+flufl.lock
     # via dvc
-freezegun==1.1.0
+freezegun
     # via -r requirements/dev.in
-ftfy==5.8
+ftfy
     # via python-benedict
-funcy==1.15
+funcy
     # via dvc
-future==0.18.2
+future
     # via
     #   -c requirements/app.txt
     #   aws-xray-sdk
     #   grandalf
-gitdb==4.0.5
+gitdb
     # via gitpython
-gitpython==3.1.12
+gitpython
     # via dvc
-grandalf==0.6
+grandalf
     # via dvc
-graphviz==0.16
+graphviz
     # via catboost
-idna==2.10
+idna
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
     #   moto
     #   requests
     #   trio
-iniconfig==1.1.1
+iniconfig
     # via pytest
-jinja2==2.11.2
+jinja2
     # via
     #   -c requirements/app.txt
     #   moto
-jmespath==0.10.0
+jmespath
     # via
     #   -c requirements/app.txt
     #   boto3
     #   botocore
-jsondiff==1.2.0
+jsondiff
     # via moto
-jsonpatch==1.28
+jsonpatch
     # via cfn-lint
-jsonpath-ng==1.5.2
+jsonpath-ng
     # via dvc
-jsonpickle==1.5.0
+jsonpickle
     # via aws-xray-sdk
-jsonpointer==2.0
+jsonpointer
     # via jsonpatch
-jsonschema==3.2.0
+jsonschema
     # via
     #   aws-sam-translator
     #   cfn-lint
-junit-xml==1.9
+junit-xml
     # via cfn-lint
-kiwisolver==1.3.1
+kiwisolver
     # via matplotlib
-mailchecker==4.0.3
+mailchecker
     # via python-benedict
-markupsafe==1.1.1
+markupsafe
     # via
     #   -c requirements/app.txt
     #   jinja2
     #   moto
-matplotlib==3.3.4
+matplotlib
     # via catboost
-mock==4.0.3
+mock
     # via moto
-more-itertools==8.6.0
+more-itertools
     # via moto
-moto[s3]==1.3.16
+moto[s3]
     # via -r requirements/dev.in
-nanotime==0.5.2
+nanotime
     # via dvc
-networkx==2.5
+networkx
     # via
     #   -c requirements/app.txt
     #   cfn-lint
     #   dvc
-numpy==1.19.5
+numpy
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
@@ -182,71 +182,71 @@ numpy==1.19.5
     #   matplotlib
     #   pandas
     #   scipy
-outcome==1.1.0
+outcome
     # via
     #   -c requirements/svc.txt
     #   pytest-trio
     #   trio
-packaging==20.8
+packaging
     # via
     #   dvc
     #   pytest
-pandas==1.2.0
+pandas
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
     #   catboost
-pathlib2==2.3.5
+pathlib2
     # via flatten-dict
-pathspec==0.8.1
+pathspec
     # via dvc
-phonenumbers==8.12.17
+phonenumbers
     # via python-benedict
-pillow==8.1.0
+pillow
     # via matplotlib
-plotly==4.14.3
+plotly
     # via
     #   -c requirements/app.txt
     #   catboost
-pluggy==0.13.1
+pluggy
     # via pytest
-ply==3.11
+ply
     # via
     #   dvc
     #   jsonpath-ng
-py==1.10.0
+py
     # via pytest
-pyasn1==0.4.8
+pyasn1
     # via
     #   dvc
     #   python-jose
     #   rsa
-pycparser==2.20
+pycparser
     # via cffi
-pydot==1.4.1
+pydot
     # via dvc
-pygments==2.7.4
+pygments
     # via rich
-pygtrie==2.3.2
+pygtrie
     # via dvc
-pyparsing==2.4.7
+pyparsing
     # via
     #   dvc
     #   grandalf
     #   matplotlib
     #   packaging
     #   pydot
-pyrsistent==0.17.3
+pyrsistent
     # via jsonschema
-pytest-trio==0.7.0
+pytest-trio
     # via -r requirements/dev.in
-pytest==6.2.1
+pytest
     # via
     #   -r requirements/dev.in
     #   pytest-trio
-python-benedict==0.23.2
+python-benedict
     # via dvc
-python-dateutil==2.8.1
+python-dateutil
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
@@ -256,25 +256,25 @@ python-dateutil==2.8.1
     #   moto
     #   pandas
     #   python-benedict
-python-fsutil==0.4.0
+python-fsutil
     # via python-benedict
-python-jose[cryptography]==3.2.0
+python-jose[cryptography]
     # via moto
-python-slugify==4.0.1
+python-slugify
     # via python-benedict
-pytz==2020.5
+pytz
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
     #   moto
     #   pandas
-pyyaml==5.4.1
+pyyaml
     # via
     #   -c requirements/app.txt
     #   cfn-lint
     #   moto
     #   python-benedict
-requests==2.25.1
+requests
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
@@ -284,33 +284,33 @@ requests==2.25.1
     #   python-benedict
     #   python-fsutil
     #   responses
-responses==0.12.1
+responses
     # via moto
-retrying==1.3.3
+retrying
     # via
     #   -c requirements/app.txt
     #   plotly
-rich==9.10.0
+rich
     # via dvc
-rsa==4.7
+rsa
     # via python-jose
-ruamel.yaml.clib==0.2.2
+ruamel.yaml.clib
     # via ruamel.yaml
-ruamel.yaml==0.16.12
+ruamel.yaml
     # via dvc
-s3transfer==0.3.4
+s3transfer
     # via
     #   -c requirements/app.txt
     #   boto3
-scipy==1.6.0
+scipy
     # via
     #   -c requirements/app.txt
     #   catboost
-shortuuid==1.0.1
+shortuuid
     # via dvc
-shtab==1.3.4
+shtab
     # via dvc
-six==1.15.0
+six
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
@@ -334,39 +334,39 @@ six==1.15.0
     #   responses
     #   retrying
     #   websocket-client
-smmap==3.0.5
+smmap
     # via gitdb
-sniffio==1.2.0
+sniffio
     # via
     #   -c requirements/svc.txt
     #   trio
-sortedcontainers==2.4.0
+sortedcontainers
     # via
     #   -c requirements/svc.txt
     #   trio
-sshpubkeys==3.1.0
+sshpubkeys
     # via moto
-tabulate==0.8.7
+tabulate
     # via dvc
-text-unidecode==1.3
+text-unidecode
     # via python-slugify
-toml==0.10.2
+toml
     # via
     #   dvc
     #   pytest
     #   python-benedict
-tqdm==4.56.0
+tqdm
     # via dvc
-trio==0.19.0
+trio
     # via
     #   -c requirements/svc.txt
     #   -r requirements/dev.in
     #   pytest-trio
-typing-extensions==3.7.4.3
+typing-extensions
     # via
     #   dvc
     #   rich
-urllib3==1.26.2
+urllib3
     # via
     #   -c requirements/app.txt
     #   -c requirements/svc.txt
@@ -374,25 +374,25 @@ urllib3==1.26.2
     #   dulwich
     #   requests
     #   responses
-voluptuous==0.12.1
+voluptuous
     # via dvc
-wcwidth==0.2.5
+wcwidth
     # via ftfy
-websocket-client==0.57.0
+websocket-client
     # via docker
-werkzeug==1.0.1
+werkzeug
     # via
     #   -c requirements/app.txt
     #   moto
-wrapt==1.12.1
+wrapt
     # via aws-xray-sdk
-xmltodict==0.12.0
+xmltodict
     # via
     #   moto
     #   python-benedict
-zc.lockfile==2.0
+zc.lockfile
     # via dvc
-zipp==3.4.0
+zipp
     # via moto
 
 # The following packages are considered to be unsafe in a requirements file:

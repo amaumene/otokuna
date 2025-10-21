@@ -1,4 +1,4 @@
--c svc.txt
+-r svc.txt
 boto3
 dtale
 flask

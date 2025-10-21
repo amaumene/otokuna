@@ -50,7 +50,7 @@ def main(args):
         X_train, y_train,
         eval_set=(X_val, y_val),
         use_best_model=True,
-        early_stopping_rounds=10
+        #early_stopping_rounds=10
     )
 
     # Evaluate model
@@ -71,6 +71,17 @@ def main(args):
         del model.get_metadata()[key]
     for format_ in ("cbm", "onnx"):
         model.save_model(f"{args.model_filename}.{format_}", format=format_)
+
+    # Fix ONNX output shape metadata to match runtime behavior
+    # CatBoost exports with shape {-1} but TreeEnsembleRegressor produces {N, 1}
+    # This causes warnings in onnxruntime 1.23+ which validates shape matches
+    import onnx
+    onnx_path = f"{args.model_filename}.onnx"
+    onnx_model = onnx.load(onnx_path)
+    # Add second dimension: {-1} → {-1, 1}
+    dim = onnx_model.graph.output[0].type.tensor_type.shape.dim.add()
+    dim.dim_value = 1
+    onnx.save(onnx_model, onnx_path)
 
 
 if __name__ == "__main__":

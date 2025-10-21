@@ -1,17 +1,17 @@
 stages:
   scrape-properties:
-    cmd: scrape-properties data/2021-07-04T11:52:04+09:00/東京都.zip --output-filename
-      data/2021-07-04T11:52:04+09:00/東京都.pickle --output-format pickle --jobs 3
+    cmd: scrape-properties dumped_data/2025-10-18T18:06:41+09:00/東京都.zip --output-filename
+      dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle --output-format pickle --jobs 3
     deps:
     - ../libs/otokuna
-    - data/2021-07-04T11:52:04+09:00/東京都.zip
+    - dumped_data/2025-10-18T18:06:41+09:00/東京都.zip
     outs:
-    - data/2021-07-04T11:52:04+09:00/東京都.pickle
+    - dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
   train:
-    cmd: ./train.py data/2021-07-04T11:52:04+09:00/東京都.pickle models/regressor
+    cmd: ./train.py dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle models/regressor
     deps:
     - ../libs/otokuna
-    - data/2021-07-04T11:52:04+09:00/東京都.pickle
+    - dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
     - train.py
     outs:
     - models/regressor.cbm
@@ -20,10 +20,10 @@ stages:
     - metrics.json:
         cache: false
   check-onnx:
-    cmd: ./check_onnx.py data/2021-07-04T11:52:04+09:00/東京都.pickle models/regressor.onnx models/regressor.cbm
+    cmd: ./check_onnx.py dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle models/regressor.onnx models/regressor.cbm
     deps:
     - check_onnx.py
-    - data/2021-07-04T11:52:04+09:00/東京都.pickle
+    - dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
     - models/regressor.cbm
     - models/regressor.onnx
     metrics:

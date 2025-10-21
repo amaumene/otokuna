@@ -3,7 +3,7 @@ import os
 import boto3
 import pytest
 import trio
-from moto import mock_s3
+from moto import mock_aws
 from trio.testing import trio_test
 
 import dump_property_data
@@ -19,7 +19,7 @@ SEARCH_PAGE_CONTENT = f"""
 
 # Cannot use pytest.mark.trio with moto_s3
 # See related issue: https://github.com/python-trio/pytest-trio/issues/42
-@mock_s3
+@mock_aws
 @trio_test
 @pytest.mark.parametrize("batch_name", ["千代田区", None])
 async def test_main_async(batch_name, set_environ, monkeypatch):
@@ -36,12 +36,20 @@ async def test_main_async(batch_name, set_environ, monkeypatch):
             self.url = url
             self.text = text
             self.content = text.encode()
+            self.status_code = 200  # Mock successful HTTP response
 
-    async def mock_get(url, timeout=None, retries=1):
-        await trio.sleep(0)
-        return MockResponse(url, html_text_by_url[url])
+    class MockAsyncClient:
+        async def get(self, url, timeout=None, headers=None, **kwargs):
+            await trio.sleep(0)
+            return MockResponse(url, html_text_by_url[url])
 
-    monkeypatch.setattr("dump_property_data.asks.get", mock_get)
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            pass
+
+    monkeypatch.setattr("dump_property_data.httpx.AsyncClient", lambda **kwargs: MockAsyncClient())
 
     s3_client = boto3.client('s3')
     s3_client.create_bucket(Bucket=output_bucket)

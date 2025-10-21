@@ -4,27 +4,30 @@ from pathlib import Path
 
 import boto3
 import pandas as pd
-from moto import mock_s3
+from moto import mock_aws
 
 import predict
 
 DATA_DIR = Path(__file__).parent / "data"
 
 
-@mock_s3
+@mock_aws
 def test_main(set_environ):
     output_bucket = os.environ["OUTPUT_BUCKET"]
     root_key = "predictions/daily/2021-01-25T14:59:25+00:00"
     scraped_data_key = "dumped_data/daily/2021-01-25T14:59:25+00:00/東京都.pickle"
     model_filename = "../ml/models/regressor.onnx"
-    os.environ["MODEL_PATH"] = model_filename
+    model_s3_key = "models/regressor.onnx"
+    os.environ["MODEL_BUCKET"] = output_bucket
+    os.environ["MODEL_S3_KEY"] = model_s3_key
 
     expected_prediction_data_key = f"{root_key}/prediction.pickle"
 
-    # Upload pickle file with scraped property data
+    # Upload pickle file with scraped property data and model file
     s3_client = boto3.client("s3")
     s3_client.create_bucket(Bucket=output_bucket)
     s3_client.upload_file(Bucket=output_bucket, Key=scraped_data_key, Filename=str(DATA_DIR / "scraped_data.pickle"))
+    s3_client.upload_file(Bucket=output_bucket, Key=model_s3_key, Filename=model_filename)
 
     # run main (downloads scraped data, predicts, and uploads results pickle)
     event = {

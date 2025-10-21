@@ -11,17 +11,43 @@ from otokuna.analysis import add_address_coords, add_target_variable, df2Xy
 from otokuna.logging import setup_logger
 
 
+# Global variable to cache the model path across warm starts
+_MODEL_LOCAL_PATH = None
+
+
+def get_model_path(s3_client, model_bucket, model_s3_key, logger):
+    """Download the ONNX model from S3 to /tmp if not already cached."""
+    global _MODEL_LOCAL_PATH
+
+    if _MODEL_LOCAL_PATH and os.path.exists(_MODEL_LOCAL_PATH):
+        logger.info(f"Using cached model from: {_MODEL_LOCAL_PATH}")
+        return _MODEL_LOCAL_PATH
+
+    # Download model to /tmp
+    local_path = f"/tmp/{Path(model_s3_key).name}"
+    logger.info(f"Downloading model from s3://{model_bucket}/{model_s3_key} to {local_path}")
+    s3_client.download_file(Bucket=model_bucket, Key=model_s3_key, Filename=local_path)
+    logger.info(f"Model downloaded successfully")
+
+    _MODEL_LOCAL_PATH = local_path
+    return local_path
+
+
 def main(event, context):
     """Makes predictions from scraped data and stores the results in the bucket."""
     logger = setup_logger("predict", include_timestamp=False, propagate=False)
 
     output_bucket = os.environ["OUTPUT_BUCKET"]
+    model_bucket = os.environ["MODEL_BUCKET"]
+    model_s3_key = os.environ["MODEL_S3_KEY"]
     root_key = event["root_key"]
     scraped_data_key = event["scraped_data_key"]
     prediction_data_key = str(Path(root_key) / "prediction.pickle")
-    model_filename = os.environ["MODEL_PATH"]
 
     s3_client = boto3.client("s3")
+
+    # Download model from S3 (cached across warm starts)
+    model_filename = get_model_path(s3_client, model_bucket, model_s3_key, logger)
     # Get pickle from bucket and read dataframe from it
     logger.info(f"Getting scraped data from: {scraped_data_key}")
     with io.BytesIO() as stream:

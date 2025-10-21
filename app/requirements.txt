@@ -1,0 +1,12 @@
+boto3
+dash
+dtale>=3.18.2
+Flask
+Flask_Login
+flask_wtf
+pandas>=2.3.3
+PyYAML
+redislite
+Werkzeug
+WTForms
+gunicorn

@@ -14,11 +14,12 @@ import requests
 from otokuna import SUUMO_URL
 from otokuna.logging import setup_logger, LOCAL_TIMEZONE
 
-TOKYO_SPECIAL_WARDS = (
-    "千代田区", "中央区", "港区", "新宿区", "文京区", "台東区", "墨田区", "江東区",
-    "品川区", "目黒区", "大田区", "世田谷区", "渋谷区", "中野区", "杉並区", "豊島区",
-    "北区", "荒川区", "板橋区", "練馬区", "足立区", "葛飾区", "江戸川区"
-)
+#TOKYO_SPECIAL_WARDS = (
+#    "千代田区", "中央区", "港区", "新宿区", "文京区", "台東区", "墨田区", "江東区",
+#    "品川区", "目黒区", "大田区", "世田谷区", "渋谷区", "中野区", "杉並区", "豊島区",
+#    "北区", "荒川区", "板橋区", "練馬区", "足立区", "葛飾区", "江戸川区"
+#)
+TOKYO_SPECIAL_WARDS = ( "板橋区", "豊島区", "北区" )
 SUUMO_TOKYO_SEARCH_URL = f"{SUUMO_URL}/chintai/tokyo/city/"
 
 # TODO: Consider bundling the 全国地方公共団体コード data to assert code-ward codes.

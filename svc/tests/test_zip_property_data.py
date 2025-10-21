@@ -5,7 +5,7 @@ from pathlib import Path
 
 import boto3
 import pytest
-from moto import mock_s3
+from moto import mock_aws
 
 import zip_property_data
 
@@ -34,7 +34,7 @@ def test_remove_prefix(s,expected):
     assert zip_property_data.remove_prefix(s, prefix) == expected
 
 
-@mock_s3
+@mock_aws
 def test_main(set_environ):
     output_bucket = os.environ["OUTPUT_BUCKET"]
     base_path = "some/folder"

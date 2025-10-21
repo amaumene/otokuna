@@ -3,7 +3,7 @@ import re
 from typing import List, Tuple, Union
 
 import pandas as pd
-from kanjize import int2kanji
+from kanjize import number2kanji as int2kanji
 
 from otokuna import DATA_DIR
 

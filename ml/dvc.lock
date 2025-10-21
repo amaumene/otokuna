@@ -1,58 +1,78 @@
-scrape-properties:
-  cmd: scrape-properties data/2021-07-04T11:52:04+09:00/東京都.zip --output-filename
-    data/2021-07-04T11:52:04+09:00/東京都.pickle --output-format pickle --jobs 3
-  deps:
-  - path: ../libs/otokuna
-    md5: ff7396a2a482b55cabb9c3bd5172d937.dir
-    size: 598931
-    nfiles: 20
-  - path: data/2021-07-04T11:52:04+09:00/東京都.zip
-    md5: dcffdb66cda379cdbe968ce72acec74f
-    size: 92033844
-  outs:
-  - path: data/2021-07-04T11:52:04+09:00/東京都.pickle
-    md5: 75872aed390ac5f159a331d9f725a6bb
-    size: 68668120
-train:
-  cmd: ./train.py data/2021-07-04T11:52:04+09:00/東京都.pickle models/regressor
-  deps:
-  - path: ../libs/otokuna
-    md5: ff7396a2a482b55cabb9c3bd5172d937.dir
-    size: 598931
-    nfiles: 20
-  - path: data/2021-07-04T11:52:04+09:00/東京都.pickle
-    md5: 75872aed390ac5f159a331d9f725a6bb
-    size: 68668120
-  - path: train.py
-    md5: 21814f01b2460aa9b2ca601f20e4a9a7
-    size: 2561
-  outs:
-  - path: metrics.json
-    md5: 0ac88c9619608485ad4349ef21e56a09
-    size: 106
-  - path: models/regressor.cbm
-    md5: 7cc970f74cf4780d606b733b93744088
-    size: 17809344
-  - path: models/regressor.onnx
-    md5: 50beec3fd5e8b5b158518ff10a8d56a4
-    size: 78542412
-check-onnx:
-  cmd: ./check_onnx.py data/2021-07-04T11:52:04+09:00/東京都.pickle models/regressor.onnx
-    models/regressor.cbm
-  deps:
-  - path: check_onnx.py
-    md5: e78c2470b42f036c618f8cd11f90a2ff
-    size: 1717
-  - path: data/2021-07-04T11:52:04+09:00/東京都.pickle
-    md5: 75872aed390ac5f159a331d9f725a6bb
-    size: 68668120
-  - path: models/regressor.cbm
-    md5: 7cc970f74cf4780d606b733b93744088
-    size: 17809344
-  - path: models/regressor.onnx
-    md5: 50beec3fd5e8b5b158518ff10a8d56a4
-    size: 78542412
-  outs:
-  - path: check_onnx.json
-    md5: 99daaa23d87a8443d081a255ea9f0b95
-    size: 42
+schema: '2.0'
+stages:
+  scrape-properties:
+    cmd: scrape-properties dumped_data/2025-10-18T18:06:41+09:00/東京都.zip 
+      --output-filename dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle 
+      --output-format pickle --jobs 3
+    deps:
+    - path: ../libs/otokuna
+      hash: md5
+      md5: 70e8cafc1d8bb39ed649a65d19dc47b5.dir
+      size: 607612
+      nfiles: 17
+    - path: dumped_data/2025-10-18T18:06:41+09:00/東京都.zip
+      hash: md5
+      md5: ea2fbb1681dd189281bad9d337c1fcbf
+      size: 7271932
+    outs:
+    - path: dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
+      hash: md5
+      md5: f7286234a3f19ec51738dec84a96053b
+      size: 5567906
+  train:
+    cmd: ./train.py dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle 
+      models/regressor
+    deps:
+    - path: ../libs/otokuna
+      hash: md5
+      md5: 70e8cafc1d8bb39ed649a65d19dc47b5.dir
+      size: 607612
+      nfiles: 17
+    - path: dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
+      hash: md5
+      md5: f7286234a3f19ec51738dec84a96053b
+      size: 5567906
+    - path: train.py
+      hash: md5
+      md5: 09fb399d1d2041249c617b009c5cf089
+      size: 3059
+      isexec: true
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: c3f3afcc9b7c3bb34aec9ac7f04691e2
+      size: 107
+    - path: models/regressor.cbm
+      hash: md5
+      md5: d8f844125236728552b3958d31d1a796
+      size: 22687208
+    - path: models/regressor.onnx
+      hash: md5
+      md5: 1720e54eba8ccc781fdd0401fbec2a3e
+      size: 97056603
+  check-onnx:
+    cmd: ./check_onnx.py dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle 
+      models/regressor.onnx models/regressor.cbm
+    deps:
+    - path: check_onnx.py
+      hash: md5
+      md5: e78c2470b42f036c618f8cd11f90a2ff
+      size: 1717
+      isexec: true
+    - path: dumped_data/2025-10-18T18:06:41+09:00/東京都.pickle
+      hash: md5
+      md5: f7286234a3f19ec51738dec84a96053b
+      size: 5567906
+    - path: models/regressor.cbm
+      hash: md5
+      md5: d8f844125236728552b3958d31d1a796
+      size: 22687208
+    - path: models/regressor.onnx
+      hash: md5
+      md5: 1720e54eba8ccc781fdd0401fbec2a3e
+      size: 97056603
+    outs:
+    - path: check_onnx.json
+      hash: md5
+      md5: 91dc0b215b0f82d95e7f7771233a41cb
+      size: 43

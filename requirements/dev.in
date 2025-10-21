@@ -1,5 +1,5 @@
--c svc.txt
--c app.txt
+-r svc.txt
+-r app.txt
 # boto3 is not required for deployment but it is useful for development (autocomplete, docs, etc)
 boto3
 # TODO: consider adding it as a lib dependency
@@ -7,6 +7,7 @@ catboost
 dvc
 freezegun
 moto[s3]
+onnx
 pytest
 pytest-trio
 trio

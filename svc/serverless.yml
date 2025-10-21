@@ -14,7 +14,7 @@ service: predict-svc
 app: otokuna
 # org: is passed via command-line arg
 
-frameworkVersion: "2"
+frameworkVersion: "3"
 
 plugins:
   - serverless-python-requirements
@@ -23,21 +23,27 @@ custom:
   # TODO: Package requirements independently
   #  The S3 path generator should be lightweight
   pythonRequirements:
-    pythonBin: ../.venv/bin/python3
+    #pythonBin: ../.venv/bin/python3
     fileName: requirements.txt
     pipCmdExtraArgs:
-      - '--no-index --find-links=wheelhouse'
+      - '--find-links=/var/wheelhouse'
     dockerizePip: non-linux
+    dockerRunCmdExtraArgs:
+      - '-v'
+      - '${env:PWD}/wheelhouse:/var/wheelhouse:ro'
     slim: true
-  output_bucket: ${file(params.yml):output_bucket}-${opt:stage}
-  model_path: regressor.onnx
+    strip: false  # Prevent stripping binaries - breaks numpy C extensions
+  output_bucket: ${file(params.yml):output_bucket}
+  model_bucket: ${self:custom.output_bucket}
+  model_s3_key: models/regressor.onnx
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.12
   lambdaHashingVersion: 20201221
-  stage: ${opt:stage}
-  region: us-east-1
+  architecture: x86_64  # Match compiled numpy binaries
+  stage: ${opt:stage, 'prod'}
+  region: ${opt:region, 'ap-northeast-1'}
   environment:
     OUTPUT_BUCKET: ${self:custom.output_bucket}
   stackTags:
@@ -58,8 +64,8 @@ provider:
         - s3:PutObject
       Resource: "arn:aws:s3:::${self:custom.output_bucket}/*"
 
-# TODO: package individually
 package:
+  individually: true
   exclude:
     - "**/*"
   include:
@@ -70,7 +76,6 @@ package:
     - scrape_property_data.py
     - predict.py
     - save_job_info.py
-    - ${self:custom.model_path}
 
 functions:
   generate-base-path-daily:
@@ -85,7 +90,7 @@ functions:
     memorySize: 128
   dump-property-data:
     handler: dump_property_data.main
-    timeout: 300  # 5 min. max of AWS Lambda is 15 min
+    timeout: 600  # 10 min. Increased for exponential backoff retries
     memorySize: 256  # observed value of ~154 MB + leeway
     # TODO: consider limiting the number of attempts
     # maximumRetryAttempts: 1
@@ -102,7 +107,8 @@ functions:
     timeout: 300
     memorySize: 2048
     environment:
-      MODEL_PATH: ${self:custom.model_path}
+      MODEL_BUCKET: ${self:custom.model_bucket}
+      MODEL_S3_KEY: ${self:custom.model_s3_key}
   save-job-info:
     handler: save_job_info.main
     timeout: 30

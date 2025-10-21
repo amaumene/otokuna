@@ -2,8 +2,11 @@
 # See: https://github.com/jazzband/pip-tools/issues/204#issuecomment-550051424
 -e file:libs#egg=otokuna
 # boto3 is already installed in the lambda runtime
-asks
+# httpx: Modern async HTTP client, replaces unmaintained 'asks'
+# httpx works with trio and is actively maintained
+httpx
 beautifulsoup4
+onnx
 onnxruntime
 requests
 trio

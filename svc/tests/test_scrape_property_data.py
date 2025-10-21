@@ -4,14 +4,14 @@ from pathlib import Path
 
 import boto3
 import pandas as pd
-from moto import mock_s3
+from moto import mock_aws
 
 import scrape_property_data
 
 DATA_DIR = Path(__file__).parent / "data"
 
 
-@mock_s3
+@mock_aws
 def test_main(set_environ):
     output_bucket = os.environ["OUTPUT_BUCKET"]
     timestamp = 1611586765.0
