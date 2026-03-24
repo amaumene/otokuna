@@ -10,3 +10,4 @@ redislite
 Werkzeug
 WTForms
 gunicorn
+setuptools<82
