@@ -17,7 +17,6 @@ app: otokuna
 frameworkVersion: "4"
 
 plugins:
-  - serverless-python-requirements
   - serverless-step-functions
 custom:
   # TODO: Package requirements independently
