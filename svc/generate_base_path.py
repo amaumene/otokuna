@@ -13,11 +13,10 @@ def main_daily(event, context):
     #  like 'jobs/[UUID]'
     base_path = Path("dumped_data") / "daily" / datetime_str / "東京都"
     root_key = Path("predictions") / "daily" / datetime_str
-    return {
-        "base_path": str(base_path),
-        "root_key": str(root_key),
-        "timestamp": now.timestamp(),
-    }
+    event["base_path"] = str(base_path)
+    event["root_key"] = str(root_key)
+    event["timestamp"] = now.timestamp()
+    return event
 
 
 def main_user_requested(event, context):

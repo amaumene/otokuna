@@ -128,7 +128,6 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [generate-base-path-daily, Arn]
-            ResultPath: $.paths
             Next: DumpMap
           DumpMap:
             Type: Map
@@ -136,7 +135,7 @@ stepFunctions:
             ResultPath: $.map_result
             Parameters:
               batch_name.$: $$.Map.Item.Value
-              base_path.$: $.paths.base_path
+              base_path.$: $.base_path
             Iterator:
               StartAt: build_search_url_step
               States:
@@ -155,10 +154,6 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [zip-property-data, Arn]
-            Parameters:
-              base_path.$: $.paths.base_path
-              root_key.$: $.paths.root_key
-              timestamp.$: $.paths.timestamp
             Next: ScrapePropertyData
           ScrapePropertyData:
             Type: Task
