@@ -35,22 +35,39 @@ class DecisionTreeRegressorWithQuantiles(DecisionTreeRegressor):
     """
 
     def __init__(
-            self, *, quantiles,
-            criterion="mse", splitter="best", max_depth=None,
-            min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.,
-            max_features=None, random_state=None, max_leaf_nodes=None,
-            min_impurity_decrease=0., min_impurity_split=None, ccp_alpha=0.0
+        self,
+        *,
+        quantiles,
+        criterion="squared_error",
+        splitter="best",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features=None,
+        random_state=None,
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        ccp_alpha=0.0,
     ):
         super().__init__(
-            criterion=criterion, splitter=splitter, max_depth=max_depth,
-            min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf, min_weight_fraction_leaf=min_weight_fraction_leaf,
-            max_features=max_features, random_state=random_state, max_leaf_nodes=max_leaf_nodes,
-            min_impurity_decrease=min_impurity_decrease, min_impurity_split=min_impurity_split, ccp_alpha=ccp_alpha)
+            criterion=criterion,
+            splitter=splitter,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
+            max_features=max_features,
+            random_state=random_state,
+            max_leaf_nodes=max_leaf_nodes,
+            min_impurity_decrease=min_impurity_decrease,
+            ccp_alpha=ccp_alpha,
+        )
         self.quantiles = quantiles
 
-    def fit(self, X, y, sample_weight=None, check_input=True, X_idx_sorted="deprecated"):
+    def fit(self, X, y, sample_weight=None, check_input=True):
         """Refer to `DecisionTreeRegressor.fit`"""
-        super().fit(X, y, sample_weight, check_input, X_idx_sorted)
+        super().fit(X, y, sample_weight=sample_weight, check_input=check_input)
         try:
             quantiles = list(self.quantiles)
         except TypeError:
@@ -64,7 +81,9 @@ class DecisionTreeRegressorWithQuantiles(DecisionTreeRegressor):
 
         self.quantiles_by_leaf_idx_ = {}
         for leaf in leaf_idxs:
-            self.quantiles_by_leaf_idx_[leaf] = list(np.quantile(y[leaf_idx_pred == leaf], quantiles))
+            self.quantiles_by_leaf_idx_[leaf] = list(
+                np.quantile(y[leaf_idx_pred == leaf], quantiles)
+            )
         return self
 
     def predict_quantile(self, X, check_input=True):
@@ -91,4 +110,6 @@ class DecisionTreeRegressorWithQuantiles(DecisionTreeRegressor):
             The predicted quantiles.
         """
         leaf_idx_pred = self.apply(X, check_input)
-        return np.stack([np.asarray(self.quantiles_by_leaf_idx_[li]) for li in leaf_idx_pred])
+        return np.stack(
+            [np.asarray(self.quantiles_by_leaf_idx_[li]) for li in leaf_idx_pred]
+        )
