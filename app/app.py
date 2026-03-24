@@ -16,8 +16,23 @@ import pandas as pd
 import yaml
 from dtale.app import build_app
 from dtale.views import startup
-from flask import abort, flash, render_template, redirect, request, url_for, send_from_directory
-from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
+from flask import (
+    abort,
+    flash,
+    render_template,
+    redirect,
+    request,
+    url_for,
+    send_from_directory,
+)
+from flask_login import (
+    UserMixin,
+    LoginManager,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
+)
 from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
@@ -38,7 +53,7 @@ class JobInfo:
     scraped_data_key: str
     prediction_data_key: str
 
-    _JST = datetime.timezone(datetime.timedelta(seconds=32400), 'JST')
+    _JST = datetime.timezone(datetime.timedelta(seconds=32400), "JST")
 
     @classmethod
     def json_loads(cls, bytes_or_str):
@@ -53,6 +68,7 @@ class JobInfo:
 @dataclass
 class Config:
     """Parameters from configuration file"""
+
     # Flask app
     secret_key: str
     users: List[Dict[str, str]]
@@ -69,7 +85,11 @@ class Config:
 
     @classmethod
     def load_from_yaml(cls, filename=None):
-        filename = filename or os.getenv("OTOKUNA_CONFIG_FILE") or "/etc/otokuna-web-server/config/config.yml"
+        filename = (
+            filename
+            or os.getenv("OTOKUNA_CONFIG_FILE")
+            or "/etc/otokuna-web-server/config/config.yml"
+        )
         with open(filename) as file:
             config_dict = yaml.safe_load(file)
         return cls(**config_dict)
@@ -160,8 +180,7 @@ def join_dataframes(scraped_df, prediction_df):
     df.sort_values(by="otokuna_score", ascending=False, inplace=True)
     # Rename columns to more readable names
     df.rename(
-        inplace=True,
-        columns={"y": "monthly_cost", "y_pred": "monthly_cost_predicted"}
+        inplace=True, columns={"y": "monthly_cost", "y_pred": "monthly_cost_predicted"}
     )
     return df
 
@@ -175,10 +194,14 @@ def load_data_daily(date):
         return REDIS_DB.hget(DATAFRAMES_KEY, date)
     # Get scraped data
     iso_datetime = REDIS_DB.hget(ISO_DATETIMES_KEY, date)
-    key = os.path.join(CONFIG.scraped_data_key_prefix, CONFIG.scraped_data_key_template).format(iso_datetime)
+    key = os.path.join(
+        CONFIG.scraped_data_key_prefix, CONFIG.scraped_data_key_template
+    ).format(iso_datetime)
     scraped_df = download_dataframe(key)
     # Get prediction data
-    key = os.path.join(CONFIG.predictions_key_prefix, CONFIG.prediction_key_template).format(iso_datetime)
+    key = os.path.join(
+        CONFIG.predictions_key_prefix, CONFIG.prediction_key_template
+    ).format(iso_datetime)
     prediction_df = download_dataframe(key.format(iso_datetime))
     df = join_dataframes(scraped_df, prediction_df)
     REDIS_DB.hset(DATAFRAMES_KEY, date, df)
@@ -203,7 +226,9 @@ def iso2date(iso: str) -> str:
 
 def date2dataid(date: str) -> int:
     # e.g. 2021-02-08 --> 1612710000
-    datetime_ = datetime.datetime.combine(datetime.date.fromisoformat(date), datetime.time())
+    datetime_ = datetime.datetime.combine(
+        datetime.date.fromisoformat(date), datetime.time()
+    )
     data_id = int(datetime_.timestamp())
     return data_id
 
@@ -263,7 +288,7 @@ def check_valid_login():
     # From https://stackoverflow.com/a/52572337
     if (
         request.endpoint is None  # e.g. from "Refresh list" button
-        or request.endpoint.startswith('static/')
+        or request.endpoint.startswith("static/")
         or current_user.is_authenticated
         or getattr(app.view_functions[request.endpoint], "is_public", False)
     ):
@@ -282,8 +307,9 @@ def index():
 def index_daily():
     prediction_objects = BUCKET.objects.iterator(Prefix=CONFIG.predictions_key_prefix)
     pattern = os.path.join(CONFIG.predictions_key_prefix, CONFIG.prediction_key_pattern)
-    prediction_iso_datetimes = sorted(re.match(pattern, obj.key).group(1)
-                                      for obj in prediction_objects)
+    prediction_iso_datetimes = sorted(
+        re.match(pattern, obj.key).group(1) for obj in prediction_objects
+    )
     prediction_dates = []
     for iso in prediction_iso_datetimes:
         date = iso2date(iso)
@@ -300,12 +326,14 @@ def index_daily():
 def load_daily_prediction(date):
     df = load_data_daily(date)
     data_id = uuid.uuid4().int
-    _ = startup(data_id=data_id,
-                data=df,
-                name=date,
-                ignore_duplicate=True,
-                allow_cell_edits=False,
-                inplace=True)
+    _ = startup(
+        data_id=data_id,
+        data=df,
+        name=date,
+        ignore_duplicate=True,
+        allow_cell_edits=False,
+        inplace=True,
+    )
     return redirect(url_for("dtale.view_iframe", data_id=data_id))
 
 
@@ -314,36 +342,42 @@ def load_daily_prediction(date):
 def index_custom_request():
     # TODO: the job info should be in a DB an the app should query that DB
     for obj in BUCKET.objects.iterator(Prefix="jobs"):
-        if not obj.key.endswith("job_info.json") or REDIS_DB.sismember(JOB_INFO_KEYS_KEY, obj.key):
+        if not obj.key.endswith("job_info.json") or REDIS_DB.sismember(
+            JOB_INFO_KEYS_KEY, obj.key
+        ):
             continue
         job_info = JobInfo.json_loads(obj.get()["Body"].read())
         REDIS_DB.sadd(JOB_INFO_KEYS_KEY, obj.key)
         REDIS_DB.hset(JOB_INFO_KEY, job_info.job_id, job_info)
-    jobs = sorted(REDIS_DB.hvals(JOB_INFO_KEY), key=lambda job: (job.timestamp, job.user_id))
-    return render_template("index_custom_request.html", jobs=jobs, form=CustomRequestForm())
+    jobs = sorted(
+        REDIS_DB.hvals(JOB_INFO_KEY), key=lambda job: (job.timestamp, job.user_id)
+    )
+    return render_template(
+        "index_custom_request.html", jobs=jobs, form=CustomRequestForm()
+    )
 
 
 @app.route("/prediction/<job_id>")
 def load_prediction(job_id):
     job_info = REDIS_DB.hget(JOB_INFO_KEY, job_id)
     data_id = uuid.UUID(job_id).int
-    _ = startup(data_id=data_id,
-                data=load_data(job_id),
-                name=job_info.search_conditions,
-                ignore_duplicate=True,
-                allow_cell_edits=False,
-                inplace=True)
+    _ = startup(
+        data_id=data_id,
+        data=load_data(job_id),
+        name=job_info.search_conditions,
+        ignore_duplicate=True,
+        allow_cell_edits=False,
+        inplace=True,
+    )
     return redirect(url_for("dtale.view_iframe", data_id=data_id))
 
 
 @app.route("/custom_request/submit", methods=("POST",))
 def submit_custom_request():
     form = CustomRequestForm()
-    assert form.validate_on_submit()
-    input_data = {
-        "user_id": current_user.id,
-        "search_url": form.search_url.data
-    }
+    if not form.validate_on_submit():
+        abort(400)
+    input_data = {"user_id": current_user.id, "search_url": form.search_url.data}
     boto3.client("stepfunctions", region_name=CONFIG.sfn_region_name).start_execution(
         stateMachineArn=CONFIG.sfn_arn,
         input=json.dumps(input_data),
@@ -353,10 +387,12 @@ def submit_custom_request():
 
 # dtale already takes the default static path for its assets,
 # so we define a new one for the this app's vendored assets.
-@app.route('/static/vendor/<path:filename>')
+@app.route("/static/vendor/<path:filename>")
 def static_vendor(filename):
-    return send_from_directory((BASE_PATH / "static" / "vendor").resolve(), secure_filename(filename))
+    return send_from_directory(
+        (BASE_PATH / "static" / "vendor").resolve(), secure_filename(filename)
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, processes=4, threaded=False)
