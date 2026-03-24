@@ -243,12 +243,42 @@ executable is not found.
 
         ~$ pip install -r requirements/app.txt
 
-2. Create a `config.yml` with the parameters appropriate for your application. 
-   An example file can be found [here](app/config/config.example.yml).
+2. Configure the app. You can use a YAML config file, environment variables, or both 
+   (env vars take precedence). An example config file can be found 
+   [here](app/config/config.example.yml).
 
-3. Run the web app with the following command:
-    
+   **Option A: YAML config file**
+   
+   Create a `config.yml` based on the example and point to it:
+
         ~$ OTOKUNA_CONFIG_FILE=config/config.yml gunicorn --chdir app --preload app:app
+
+   **Option B: Environment variables**
+   
+   Set any of the following `OTOKUNA_*` environment variables:
+
+   | Env var | Description |
+   |---|---|
+   | `OTOKUNA_SECRET_KEY` | Flask session signing secret |
+   | `OTOKUNA_USERS` | Login credentials as a JSON string (see below) |
+   | `OTOKUNA_DTALE_STATE_DIR` | Directory for Dtale state (default: `/tmp/otokuna_dtale_state`) |
+   | `OTOKUNA_APP_DB_FILE` | App state DB file path (default: `/tmp/otokuna_app_state.db`) |
+   | `OTOKUNA_BUCKET_NAME` | S3 bucket name for data and predictions |
+   | `OTOKUNA_SFN_REGION_NAME` | AWS region for Step Functions |
+   | `OTOKUNA_SFN_ARN` | ARN of the Step Functions state machine |
+   | `OTOKUNA_SCRAPED_DATA_KEY_PREFIX` | S3 key prefix for scraped data |
+   | `OTOKUNA_SCRAPED_DATA_KEY_TEMPLATE` | S3 key template for scraped data |
+   | `OTOKUNA_PREDICTIONS_KEY_PREFIX` | S3 key prefix for predictions |
+   | `OTOKUNA_PREDICTION_KEY_TEMPLATE` | S3 key template for prediction files |
+   | `OTOKUNA_PREDICTION_KEY_PATTERN` | Regex pattern to extract datetime from prediction keys |
+
+   The `OTOKUNA_USERS` variable expects a JSON array of objects:
+
+        OTOKUNA_USERS='[{"user_id":"alex","password_hash":"pbkdf2:sha256:..."}]'
+
+3. Run the web app:
+    
+        ~$ gunicorn --chdir app --preload app:app
         
 4. The app can be accessed from the URL printed in the console.
 
