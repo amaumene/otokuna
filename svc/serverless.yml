@@ -46,10 +46,10 @@ provider:
   environment:
     OUTPUT_BUCKET: ${self:custom.output_bucket}
   stackTags:
-    otokuna:git-repo-name: ${env:GIT_REPO_NAME}
-    otokuna:git-branch: ${env:GIT_BRANCH}
-    otokuna:git-commit-hash-short: ${env:GIT_COMMIT_HASH_SHORT}
-    otokuna:git-is-dirty: ${env:GIT_IS_DIRTY}
+    otokuna:git-repo-name: ${env:GIT_REPO_NAME, ''}
+    otokuna:git-branch: ${env:GIT_BRANCH, ''}
+    otokuna:git-commit-hash-short: ${env:GIT_COMMIT_HASH_SHORT, ''}
+    otokuna:git-is-dirty: ${env:GIT_IS_DIRTY, ''}
   # TODO: The roles should be customized per function
   iam:
     role:
