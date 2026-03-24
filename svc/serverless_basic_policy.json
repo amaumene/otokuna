@@ -14,7 +14,9 @@
                 "ec2:DescribeSubnets",
                 "ec2:DescribeVpcs",
                 "events:*",
-                "states:*"
+                "states:*",
+                "ssm:GetParameter",
+                "ssm:PutParameter"
             ],
             "Resource": [
                 "*"
