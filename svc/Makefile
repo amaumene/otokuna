@@ -1,23 +1,19 @@
 HERE:=$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 include $(HERE)/../Makefile
 
+SLS = npx serverless
+
 .PHONY: test
 test: venv
 	$(VENV)/pip install -e .
 	$(VENV)/pytest tests/
 
-#~/.serverless/bin/sls:
-#	curl -o- -L https://slss.io/install | VERSION=2.17.0 bash
-#
-#.PHONY: serverless
-#serverless: ~/.serverless/bin/sls
-
 package-lock.json: plugins.in
 	@for plugin_name in $$(cat plugins.in); do \
-	    sls plugin install --name $${plugin_name} --stage $(STAGE); \
+	    $(SLS) plugin install --name $${plugin_name} --stage $(STAGE); \
 	done
 
-.PHONY: plugins | serverless
+.PHONY: plugins
 plugins: package-lock.json
 
 # Note: the relative paths in the requirements files are relative to the
@@ -37,7 +33,7 @@ wheelhouse/.done: requirements.txt
 	touch wheelhouse/.done
 
 .PHONY: _sls_deps
-_sls_deps: plugins requirements.txt wheelhouse/.done | serverless
+_sls_deps: plugins requirements.txt wheelhouse/.done
 
 ifneq (,$(filter $(MAKECMDGOALS),package deploy remove))
 ifndef SERVERLESS_ORG
@@ -55,9 +51,9 @@ export GIT_IS_DIRTY = $(shell if [ -n "$$(git diff HEAD)" ]; then echo true; els
 # It is safer to clean the cache of serverless-python-requirements
 # to avoid missing packaging changes to the libs.
 .PHONY: _clean_sls_py_req
-_clean_sls_py_req: | serverless
-	sls requirements clean $(SERVERLESS_ARGS)
-	sls requirements cleanCache $(SERVERLESS_ARGS)
+_clean_sls_py_req:
+	$(SLS) requirements clean $(SERVERLESS_ARGS)
+	$(SLS) requirements cleanCache $(SERVERLESS_ARGS)
 
 .PHONY: _pull_model
 _pull_model:
@@ -65,23 +61,23 @@ _pull_model:
 
 .PHONY: package
 package: _sls_deps _pull_model _clean_sls_py_req
-	sls package $(SERVERLESS_ARGS)
+	$(SLS) package $(SERVERLESS_ARGS)
 
 .PHONY: deploy
 deploy: _sls_deps _pull_model _clean_sls_py_req
-	sls deploy $(SERVERLESS_ARGS)
+	$(SLS) deploy $(SERVERLESS_ARGS)
 
 .PHONY: invoke
 invoke:
-	sls invoke --log --function $(FUNCTION) --path $(INPUT_JSON) $(SERVERLESS_ARGS)
+	$(SLS) invoke --log --function $(FUNCTION) --path $(INPUT_JSON) $(SERVERLESS_ARGS)
 
 .PHONY: invoke-stepf
 invoke-stepf:
-	sls invoke stepf --name $(STATE_MACHINE) --path $(INPUT_JSON) $(SERVERLESS_ARGS)
+	$(SLS) invoke stepf --name $(STATE_MACHINE) --path $(INPUT_JSON) $(SERVERLESS_ARGS)
 
 .PHONY: remove
-remove: | serverless
-	sls remove $(SERVERLESS_ARGS)
+remove:
+	$(SLS) remove $(SERVERLESS_ARGS)
 
 # Run invoke for a batch of dates. This is useful to apply a function
 # retroactively to the data of specific dates. It needs two files:
@@ -99,7 +95,7 @@ invoke-batch:
 	while read d; do \
   	echo processing $${d}; \
   	export AWS_CLIENT_TIMEOUT=600000; \
-    sls invoke \
+    $(SLS) invoke \
     	--log \
 	    --function $(FUNCTION) \
 	    --data "$$(sed s/__DATE__/$${d}/ $(INPUT_JSON_TMPL))" \
