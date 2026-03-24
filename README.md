@@ -44,7 +44,7 @@ This application is limited to the following **rental** properties:
 While this application is customized to rental properties, it should be useful as a blueprint 
 and possible to adapt to find good deals of other regions of Japan, other real estate websites, 
 or perhaps other things (e.g. cars) on other websites. Also, the system runs well within 
-the free tier of most the AWS services it uses.
+the free tier of most of the AWS services it uses.
 
 ### How is a "good deal" quantified?
 
@@ -100,7 +100,7 @@ and [Home's](https://www.homes.co.jp/), but I chose Suumo because:
 ## Architecture
 
 The process of the scraping property data and generating the predictions is automated with 
-a serverless service. The service is built on AWS and managed with the [serverless framework](http://serverless.com/). 
+a serverless service. The service is built on AWS and managed with the [serverless framework](http://serverless.com/) (v4). 
 
 The service runs daily and does the following:
 
@@ -118,6 +118,14 @@ below.
 This service runs well within the free-tier of AWS Lambda, Step Functions and CloudWatch 
 (if run once per day). Also, since the html data is zipped and the dataframes and model are
 rather small, the S3 storage cost is inexpensive.
+
+The state machine pipeline has the following steps:
+
+1. **Generate base path** — generate S3 paths and timestamps for the job.
+2. **Dump** — fetch the HTML search result pages from Suumo, parallelized by ward.
+3. **Zip** — compress the dumped HTML files and delete the originals.
+4. **Scrape** — parse the HTML and build a property dataframe.
+5. **Predict** — apply the regression model and generate predictions.
 
 <p align="center">
     <img src="illustrations/otokuna_architecture.png" alt="otokuna architecture" width="50%"/>
@@ -151,10 +159,9 @@ website might have.
 1. Clone this repository and `cd` to it.
 2. An AWS account and set up an IAM role with the permissions required by serverless, 
    and set up its credentials locally.
-   * An example of a basic serverless IAM policy can be found [here](svc/serverless_basic_policy.json) 
-     (as suggested [here](https://serverless-stack.com/chapters/customize-the-serverless-iam-policy.html)).
-3. A serverless account.
-4. Docker (needed by `serverless-python-requirements`).
+   * An example of a basic serverless IAM policy can be found [here](svc/serverless_basic_policy.json).
+3. A [Serverless Framework Dashboard](https://app.serverless.com/) account (required for v4).
+4. Docker (needed to build Python dependencies for Lambda when not on Linux).
 5. Install the python requirements. This will setup a python virtual environment and will 
    install all the requirements there.
 
@@ -350,7 +357,7 @@ The tests can be run with the following commands:
 
 ## About the model
 
-**Base model:** Gradient Boosted Trees Regressor made with [catboost](https://catboost.ai/).
+**Base model:** Gradient Boosted Trees Regressor trained with [catboost](https://catboost.ai/), exported to ONNX for inference.
 
 **Training objective:** Mean absolute error (MAE).
 
