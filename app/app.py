@@ -75,16 +75,16 @@ class Config:
 
     secret_key: str
     users: List[Dict[str, str]]
-    dtale_state_dir: str
-    app_db_file: str
     bucket_name: str
     sfn_region_name: str
     sfn_arn: str
-    scraped_data_key_prefix: str
-    scraped_data_key_template: str
-    predictions_key_prefix: str
-    prediction_key_template: str
-    prediction_key_pattern: str
+    dtale_state_dir: str = "/tmp/otokuna_dtale_state"
+    app_db_file: str = "/tmp/otokuna_app_state.db"
+    scraped_data_key_prefix: str = "dumped_data/daily"
+    scraped_data_key_template: str = "{}/東京都.pickle"
+    predictions_key_prefix: str = "predictions/daily"
+    prediction_key_template: str = "{}/prediction.pickle"
+    prediction_key_pattern: str = "(.*)/prediction.pickle"
 
     # Maps each field to its OTOKUNA_* env var name
     _ENV_PREFIX = "OTOKUNA_"
