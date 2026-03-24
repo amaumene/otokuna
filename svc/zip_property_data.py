@@ -9,7 +9,7 @@ from otokuna.logging import setup_logger
 
 def remove_prefix(s, prefix):
     if s.startswith(prefix):
-        return s[len(prefix):]
+        return s[len(prefix) :]
     return s
 
 
@@ -73,7 +73,9 @@ def main(event, context):
     prefix = base_path + "/"
     with io.BytesIO() as stream:
         with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as zfile:
-            for obj in s3_client.list_objects_v2(Bucket=output_bucket, Prefix=prefix)["Contents"]:
+            for obj in s3_client.list_objects_v2(
+                Bucket=output_bucket, Prefix=prefix
+            ).get("Contents", []):
                 key = obj["Key"]
                 # an object with a key equal to the prefix is not included
                 if key == prefix:
@@ -85,7 +87,9 @@ def main(event, context):
                 assert filename not in ("", "/")
                 zinfo = build_zipinfo(zfile, filename, date_time)
                 with zfile.open(zinfo, "w") as zarc:
-                    s3_client.download_fileobj(Bucket=output_bucket, Key=key, Fileobj=zarc)
+                    s3_client.download_fileobj(
+                        Bucket=output_bucket, Key=key, Fileobj=zarc
+                    )
 
         stream.seek(0)
         logger.info(f"Uploading {raw_data_key}")
