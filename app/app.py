@@ -67,9 +67,12 @@ class JobInfo:
 
 @dataclass
 class Config:
-    """Parameters from configuration file"""
+    """App configuration, loaded from env vars and/or a YAML config file.
 
-    # Flask app
+    Each field can be set via an OTOKUNA_<UPPER_KEY> environment variable.
+    If a YAML config file is also present, env vars take precedence.
+    """
+
     secret_key: str
     users: List[Dict[str, str]]
     dtale_state_dir: str
@@ -83,19 +86,34 @@ class Config:
     prediction_key_template: str
     prediction_key_pattern: str
 
+    # Maps each field to its OTOKUNA_* env var name
+    _ENV_PREFIX = "OTOKUNA_"
+
     @classmethod
-    def load_from_yaml(cls, filename=None):
-        filename = (
-            filename
-            or os.getenv("OTOKUNA_CONFIG_FILE")
+    def load(cls):
+        # Start with YAML file values if a config file is available
+        values = {}
+        config_file = (
+            os.getenv("OTOKUNA_CONFIG_FILE")
             or "/etc/otokuna-web-server/config/config.yml"
         )
-        with open(filename) as file:
-            config_dict = yaml.safe_load(file)
-        return cls(**config_dict)
+        if os.path.isfile(config_file):
+            with open(config_file) as file:
+                values = yaml.safe_load(file) or {}
+
+        # Override with env vars
+        for field_name in cls.__dataclass_fields__:
+            env_var = cls._ENV_PREFIX + field_name.upper()
+            env_value = os.getenv(env_var)
+            if env_value is not None:
+                if field_name == "users":
+                    env_value = json.loads(env_value)
+                values[field_name] = env_value
+
+        return cls(**values)
 
 
-CONFIG = Config.load_from_yaml()
+CONFIG = Config.load()
 BASE_PATH = Path(__file__).parent
 TEMPLATES_PATH = BASE_PATH / "templates"
 BUCKET = boto3.resource("s3").Bucket(CONFIG.bucket_name)

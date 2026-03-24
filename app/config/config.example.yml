@@ -1,17 +1,22 @@
-# Parameters for the Flask app
-secret_key: "some_key"
-users:
+# Parameters for the Flask app.
+# Each value can also be set via an OTOKUNA_<UPPER_KEY> environment variable.
+# Env vars take precedence over values in this file.
+# For OTOKUNA_USERS, use a JSON string, e.g.:
+#   OTOKUNA_USERS='[{"user_id":"alex","password_hash":"pbkdf2:sha256:..."}]'
+
+secret_key: "some_key"                            # OTOKUNA_SECRET_KEY
+users:                                            # OTOKUNA_USERS (JSON string)
   - user_id: "some_id0"
     password_hash: "some_hash0"
   - user_id: "some_id1"
     password_hash: "some_hash1"
-dtale_state_dir: "/tmp/otokuna_dtale_state"
-app_db_file: "/tmp/otokuna_app_state.db"
-bucket_name: "mybucket"
-sfn_region_name: "us-west-2"
-sfn_arn: "some_arn"  # same arn that is set in the policy of the IAM role for the app
-scraped_data_key_prefix: "dumped_data/daily"
-scraped_data_key_template: "{}/東京都.pickle"  # relative to scraped_data_key_prefix
-predictions_key_prefix: "predictions/daily"
-prediction_key_template: "{}/prediction.pickle"  # relative to predictions_key_prefix
-prediction_key_pattern: "(.*)/prediction.pickle"  # relative to predictions_key_prefix
+dtale_state_dir: "/tmp/otokuna_dtale_state"       # OTOKUNA_DTALE_STATE_DIR
+app_db_file: "/tmp/otokuna_app_state.db"          # OTOKUNA_APP_DB_FILE
+bucket_name: "mybucket"                           # OTOKUNA_BUCKET_NAME
+sfn_region_name: "us-west-2"                      # OTOKUNA_SFN_REGION_NAME
+sfn_arn: "some_arn"                               # OTOKUNA_SFN_ARN
+scraped_data_key_prefix: "dumped_data/daily"      # OTOKUNA_SCRAPED_DATA_KEY_PREFIX
+scraped_data_key_template: "{}/東京都.pickle"      # OTOKUNA_SCRAPED_DATA_KEY_TEMPLATE
+predictions_key_prefix: "predictions/daily"       # OTOKUNA_PREDICTIONS_KEY_PREFIX
+prediction_key_template: "{}/prediction.pickle"   # OTOKUNA_PREDICTION_KEY_TEMPLATE
+prediction_key_pattern: "(.*)/prediction.pickle"  # OTOKUNA_PREDICTION_KEY_PATTERN
