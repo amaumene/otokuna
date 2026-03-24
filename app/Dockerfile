@@ -24,7 +24,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Upgrade pip and install dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --upgrade -r requirements.txt
 
 # Stage 2: Runtime - Minimal production image
 FROM python:3.12-slim
@@ -76,6 +76,8 @@ CMD ["gunicorn", \
      "--workers", "1", \
      "--bind", "[::]:8000", \
      "--timeout", "120", \
+     "--worker-tmp-dir", "/dev/shm", \
+     "--no-control-socket", \
      "--access-logfile", "-", \
      "--error-logfile", "-", \
      "--log-level", "info", \
