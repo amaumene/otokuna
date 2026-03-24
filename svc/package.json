@@ -2,6 +2,12 @@
   "name": "dump-svc",
   "devDependencies": {
     "serverless": "^4",
-    "serverless-step-functions": "^3.26.1"
+    "serverless-python-requirements": "^6",
+    "serverless-step-functions": "^3.23.3"
+  },
+  "overrides": {
+    "serverless-step-functions": {
+      "serverless": "$serverless"
+    }
   }
 }
