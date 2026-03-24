@@ -23,7 +23,7 @@ def remove_outliers(df: pd.DataFrame, thres=0.99) -> pd.DataFrame:
     outlier_flag = False
     for col in ("area", "n_rooms", "building_age", "rent", "rent_admin_fee_ratio"):
         q = df[col].quantile(thres)
-        outlier_flag |= df[col] == q
+        outlier_flag |= df[col] >= q
     df.drop(columns=["rent_admin_fee_ratio"], inplace=True)
     return df[~outlier_flag]
 
@@ -66,7 +66,9 @@ def add_address_coords(df: pd.DataFrame) -> pd.DataFrame:
     # build address key e.g. "東京都渋谷区恵比寿南一丁目"
     df = df.copy()
     df["join_key"] = df.building_address.apply(_build_address_kanji)
-    tokyo_df["join_key"] = tokyo_df["都道府県名"] + tokyo_df["市区町村名"] + tokyo_df["大字町丁目名"]
+    tokyo_df["join_key"] = (
+        tokyo_df["都道府県名"] + tokyo_df["市区町村名"] + tokyo_df["大字町丁目名"]
+    )
 
     tokyo_df = tokyo_df[["latitude", "longitude", "join_key"]]
     tokyo_df.set_index("join_key", inplace=True)
@@ -82,7 +84,7 @@ def clean_df(df: pd.DataFrame) -> pd.DataFrame:
     """Clean the given dataframe.
     It removes rows that are duplicated, have outliers, and have missing values.
     """
-    df = df[~df.index.duplicated(keep='first')]
+    df = df[~df.index.duplicated(keep="first")]
     df = remove_outliers(df)
     # e.g. some addresses may not have been found by add_address_coords
     df.dropna(inplace=True)
@@ -113,10 +115,10 @@ def df2Xy(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
 
 
 def train_val_test_split(
-        arrays: List[Union[pd.DataFrame, pd.Series]],
-        val_ratio: float,
-        test_ratio: float,
-        seed=None
+    arrays: List[Union[pd.DataFrame, pd.Series]],
+    val_ratio: float,
+    test_ratio: float,
+    seed=None,
 ):
     """Split each of given arrays into a train/validation/test set.
     The validation/test ratio can be specified by the val_ratio and
@@ -141,9 +143,11 @@ def train_val_test_split(
 
     split = []
     for arr in arrays:
-        split.append((
-            arr.iloc[idxs[n_test + n_val:]],  # train
-            arr.iloc[idxs[n_test:n_test + n_val]],  # validation
-            arr.iloc[idxs[:n_test]]  # test
-        ))
+        split.append(
+            (
+                arr.iloc[idxs[n_test + n_val :]],  # train
+                arr.iloc[idxs[n_test : n_test + n_val]],  # validation
+                arr.iloc[idxs[:n_test]],  # test
+            )
+        )
     return split
