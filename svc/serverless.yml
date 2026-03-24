@@ -1,6 +1,6 @@
 # Notes on capitalization and style:
 # * camelCase for Serverless parameters (including plugins)
-#   - e.g. frameworkVersion, iamRoleStatements, stepFunctions
+#   - e.g. frameworkVersion, stepFunctions
 # * CamelUpperCase for AWS parameters
 #   - e.g. ItemsPath parameter of AWS step
 # * CamelUpperCase for state machines and states
@@ -14,10 +14,9 @@ service: predict-svc
 app: otokuna
 # org: is passed via command-line arg
 
-frameworkVersion: "3"
+frameworkVersion: "4"
 
 plugins:
-  - serverless-python-requirements
   - serverless-step-functions
 custom:
   # TODO: Package requirements independently
@@ -40,7 +39,6 @@ custom:
 provider:
   name: aws
   runtime: python3.12
-  lambdaHashingVersion: 20201221
   architecture: x86_64  # Match compiled numpy binaries
   stage: ${opt:stage, 'prod'}
   region: ${opt:region, 'ap-northeast-1'}
@@ -52,23 +50,24 @@ provider:
     otokuna:git-commit-hash-short: ${env:GIT_COMMIT_HASH_SHORT}
     otokuna:git-is-dirty: ${env:GIT_IS_DIRTY}
   # TODO: The roles should be customized per function
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - s3:ListBucket
-      Resource: "arn:aws:s3:::${self:custom.output_bucket}"
-    - Effect: Allow
-      Action:
-        - s3:DeleteObject
-        - s3:GetObject
-        - s3:PutObject
-      Resource: "arn:aws:s3:::${self:custom.output_bucket}/*"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+          Resource: "arn:aws:s3:::${self:custom.output_bucket}"
+        - Effect: Allow
+          Action:
+            - s3:DeleteObject
+            - s3:GetObject
+            - s3:PutObject
+          Resource: "arn:aws:s3:::${self:custom.output_bucket}/*"
 
 package:
   individually: true
-  exclude:
-    - "**/*"
-  include:
+  patterns:
+    - "!**/*"
     - build_search_url.py
     - dump_property_data.py
     - generate_base_path.py
