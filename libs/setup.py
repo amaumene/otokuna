@@ -5,7 +5,7 @@ DESCRIPTION = "Library for scraping and analyzing rental real estate data from S
 PROJECT_URL = "https://github.com/alegonz/otokuna"
 AUTHOR = "Alejandro González Tineo"
 AUTHOR_EMAIL = "alejandrojgt@gmail.com"
-PYTHON_REQUIRES = ">=3.5"
+PYTHON_REQUIRES = ">=3.9"
 # TODO: Split package into a namespace package with at least 3 packages:
 #  commons, dumper, scraper
 #  This will allow to package only the necessary dependency for each service
@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
     "kanjize",
     "numpy",
     "pandas",
-    "requests"
+    "requests",
 ]
 EXTRAS_REQUIRE = {"dev": ["pytest"]}
 ENTRY_POINTS = {
@@ -28,11 +28,14 @@ ENTRY_POINTS = {
 LICENSE = "MIT"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License"
+    "License :: OSI Approved :: MIT License",
 ]
 
 # Execute _version.py to get __version__ variable in context
-exec(open("otokuna/_version.py", encoding="utf-8").read())
+_version_ctx = {}
+with open("otokuna/_version.py", encoding="utf-8") as _f:
+    exec(_f.read(), _version_ctx)
+__version__ = _version_ctx["__version__"]
 
 setup(
     name=PACKAGE_NAME,
