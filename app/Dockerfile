@@ -56,16 +56,13 @@ COPY --chown=appuser:appuser . /app/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    OTOKUNA_CONFIG_FILE=/app/config/config.yml
+    PYTHONDONTWRITEBYTECODE=1
 
 # Switch to non-root user
 USER appuser
 
 # Expose port (matching fly.toml internal_port)
 EXPOSE 8000
-
-ENV OTOKUNA_CONFIG_FILE=/app/config/config.yml
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
