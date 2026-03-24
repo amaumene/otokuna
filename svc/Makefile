@@ -65,7 +65,7 @@ package: _sls_deps _pull_model _clean_sls_py_req
 
 .PHONY: deploy
 deploy: _sls_deps _pull_model _clean_sls_py_req
-	$(SLS) deploy $(SERVERLESS_ARGS)
+	$(SLS) deploy $(SERVERLESS_ARGS) --verbose
 
 .PHONY: invoke
 invoke:
