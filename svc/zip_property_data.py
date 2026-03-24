@@ -27,7 +27,6 @@ def build_zipinfo(zfile, filename, date_time):
     """
     zinfo = zipfile.ZipInfo(filename, date_time)
     zinfo.compress_type = zfile.compression
-    zinfo._compresslevel = zfile.compresslevel
     return zinfo
 
 
